@@ -1,8 +1,18 @@
 const http = require('http')
 const express = require('express')
+const morgan = require('morgan')
 
 const app = express()
 app.use(express.json())
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postReq' ))
+
+morgan.token('postReq', function(req) {
+  if(req.method === 'POST')
+  return JSON.stringify(req.body)
+});
+
+
+const logger = morgan('tiny')
 
 let persons = [
     { 
@@ -73,7 +83,6 @@ app.post('/api/persons', (req, res) => {
     if (persons.some(n => n.name === body.name)) {
         return res.status(400).json({error: 'name must be unique'})
     }
-    
 
     const person = {
         name: body.name,
