@@ -2,6 +2,7 @@ const http = require('http')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
 const app = express()
 app.use(cors())
@@ -16,7 +17,18 @@ morgan.token('postReq', function(req) {
 });
 
 
-const logger = morgan('tiny')
+
+if (process.argv.length < 3) {
+  console.log('Please provide the password as an argument: node mongo.js <password>')
+  process.exit(1)
+}
+
+const password = process.argv[2]
+
+const url =`mongodb+srv://admin-nives:${password}@cluster0.s8cft.mongodb.net/phonebook?retryWrites=true&w=majority`
+
+mongoose.connect(url)
+
 
 let persons = [
     { 
