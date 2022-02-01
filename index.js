@@ -69,10 +69,8 @@ app.delete('/api/persons/:id', (req, res, next) => {
 
 app.post('/api/persons', (req, res, next) => {
     const body = req.body
-    var name = 'name'
     const nameValue = body.name
-    var query = {};
-    query[name] = nameValue;
+    const kiki = nameValue.toLowerCase()
     
     if (!body.name) {
         return res.status(400).json({error: 'name missing'})
@@ -81,10 +79,11 @@ app.post('/api/persons', (req, res, next) => {
         return res.status(400).json({error: 'number missing'})
     }
 
-    if(Person.find(query)) {
-      return res.status(400).json({error: 'name must be unique'})
-    }
-    
+    Person.find({}).then(perso => {
+      if(perso.some(perso => perso.name === kiki)) {
+        return res.status(400).json({error: 'name must me uniq'})
+      }
+    })
     const person = new Person ({
         name: body.name,
         number: body.number,
